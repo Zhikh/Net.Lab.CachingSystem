@@ -9,32 +9,45 @@ namespace BLL.Cache
     public sealed class CacheDictionary<TCacheValue> : ICacheDictionaty<TCacheValue>
     {
         private const int INTERVAL = 5000;
-        
+        private const int COMPARAND = 0;
+        private const int COMPARING_VALUE = 1;
         private readonly ConcurrentDictionary<string, CacheItem<TCacheValue>> _dictionary;
         private readonly Timer _timer;
 
         private int _location;
 
+        /// <summary>
+        /// Initialises instance of <see cref="CacheDictionary{TCacheValue}"/>
+        /// </summary>
         public CacheDictionary()
         {
             _dictionary = new ConcurrentDictionary<string, CacheItem<TCacheValue>>();
             _timer = new Timer(CheckOldItems, null, INTERVAL, INTERVAL);
         }
-        
+
+        /// <inheritdoc/>
         public int Count => _dictionary.Count;
 
+        /// <inheritdoc/>
         public void Clear() => _dictionary.Clear();
 
-        public bool IsExists(string key)
+        /// <inheritdoc/>
+        public bool IsExist(string key)
         {
-            if (string.IsNullOrEmpty(key))
+            if (key == null)
             {
-                throw new ArgumentException("Key value can't be null or Empty", nameof(key));
+                throw new ArgumentNullException(nameof(key));
+            }
+
+            if (key == string.Empty)
+            {
+                throw new ArgumentException("The key value can't be empty!", nameof(key));
             }
 
             return _dictionary.ContainsKey(key);
         }
 
+        /// <inheritdoc/>
         public bool Add(CacheItem<TCacheValue> item)
         {
             if (item == null)
@@ -45,6 +58,7 @@ namespace BLL.Cache
             return _dictionary.TryAdd(item.Key, item);
         }
 
+        /// <inheritdoc/>
         public CacheItem<TCacheValue> Get(string key)
         {
             if (key == null)
@@ -70,6 +84,7 @@ namespace BLL.Cache
             return result;
         }
 
+        /// <inheritdoc/>
         public void Update(CacheItem<TCacheValue> item)
         {
             if (item == null)
@@ -80,6 +95,7 @@ namespace BLL.Cache
             _dictionary[item.Key] = item;
         }
 
+        /// <inheritdoc/>
         public bool Delete(string key)
         {
             if (key == null)
@@ -102,7 +118,7 @@ namespace BLL.Cache
                 return;
             }
 
-            if (Interlocked.CompareExchange(ref _location, 1, 0) == 0)
+            if (Interlocked.CompareExchange(ref _location, COMPARING_VALUE, COMPARAND) == 0)
             {
                 try
                 {

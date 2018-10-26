@@ -17,9 +17,10 @@ namespace BLL.Cache
         public override void Clear()
             => _cacheDictionary.Clear();
 
-        public override bool IsExists(string key)
-            => _cacheDictionary.IsExists(key);
+        public override bool IsExist(string key)
+            => _cacheDictionary.IsExist(key);
 
+        /// <inheritdoc/>
         public bool AddOrUpdate(string key, TCacheValue value)
         {
             var item = new CacheItem<TCacheValue>(key, value);
@@ -27,6 +28,7 @@ namespace BLL.Cache
             return AddOrUpdate(item);
         }
 
+        /// <inheritdoc/>
         public bool AddOrUpdate(CacheItem<TCacheValue> item)
         {
             if (item == null)

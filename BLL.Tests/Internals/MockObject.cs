@@ -38,7 +38,7 @@ namespace BLL.Tests
                 .Returns((string key) => data.FirstOrDefault(
                 x => x.Key == key));
 
-            mock.Setup(x => x.IsExists(It.IsAny<string>()))
+            mock.Setup(x => x.IsExist(It.IsAny<string>()))
                 .Returns((string key) => data.Exists(
                 x => x.Key == key));
 

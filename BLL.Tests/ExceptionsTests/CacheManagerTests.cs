@@ -17,6 +17,21 @@ namespace BLL.Tests
                 => _cacheManager.Add(string.Empty, Internals.INT_INIT_VALUE));
 
         [Test]
+        public void AddOrUpdate_NullKey_ArgumentNullException()
+            => Assert.Catch<ArgumentNullException>(()
+                => _cacheManager.AddOrUpdate(null, Internals.INT_INIT_VALUE));
+
+        [Test]
+        public void AddOrUpdate_EmptyKey_ArgumentException()
+            => Assert.Catch<ArgumentException>(()
+                => _cacheManager.AddOrUpdate(string.Empty, Internals.INT_INIT_VALUE));
+
+        [Test]
+        public void AddOrUpdate_NullItem_ArgumentNullException()
+            => Assert.Catch<ArgumentNullException>(()
+                => _cacheManager.AddOrUpdate(null));
+
+        [Test]
         public void Get_NullKey_ArgumentNullException()
             => Assert.Catch<ArgumentNullException>(()
                 => _cacheManager.Get(null));
@@ -51,5 +66,19 @@ namespace BLL.Tests
         [Test]
         public void Delete_EmptyKey_ArgumentException()
             => Assert.Catch<ArgumentException>(() => _cacheManager.Delete(string.Empty));
+
+        [Test]
+        public void Indexer_NullKey_ArgumentNullException()
+            => Assert.Catch<ArgumentNullException>(() => 
+            {
+                var item =_cacheManager[null];
+            });
+
+        [Test]
+        public void Indexer_EmptyKey_ArgumentNullException()
+            => Assert.Catch<ArgumentException>(() =>
+            {
+                var item = _cacheManager[string.Empty];
+            });
     }
 }

@@ -35,5 +35,15 @@ namespace BLL.Tests
         public void Delete_EmptyKey_ArgumentException()
             => Assert.Catch<ArgumentException>(()
                 => _cacheDictionaty.Delete(string.Empty));
+
+        [Test]
+        public void IsExist_NullKey_ArgumentNullException()
+            => Assert.Catch<ArgumentNullException>(()
+                => _cacheDictionaty.IsExist(null));
+
+        [Test]
+        public void IsExist_EmptyKey_ArgumentException()
+            => Assert.Catch<ArgumentException>(()
+                => _cacheDictionaty.IsExist(string.Empty));
     }
 }

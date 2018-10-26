@@ -6,6 +6,7 @@ namespace BLL.Cache
 {
     public abstract class BaseCache<TCacheValue> : ICache<TCacheValue>
     {
+        /// <inheritdoc/>
         public TCacheValue this[string key]
         {
             get
@@ -19,6 +20,7 @@ namespace BLL.Cache
             }
         }
 
+        /// <inheritdoc/>
         public bool Add(string key, TCacheValue value)
         {
             var item = new CacheItem<TCacheValue>(key, value);
@@ -26,6 +28,7 @@ namespace BLL.Cache
             return Add(item);
         }
 
+        /// <inheritdoc/>
         public bool Add(CacheItem<TCacheValue> item)
         {
             if (item == null)
@@ -35,7 +38,8 @@ namespace BLL.Cache
 
             return AddItem(item);
         }
-        
+
+        /// <inheritdoc/>
         public TCacheValue Get(string key)
         {
             var item = GetCacheItem(key);
@@ -48,6 +52,7 @@ namespace BLL.Cache
             return default(TCacheValue);
         }
 
+        /// <inheritdoc/>
         public CacheItem<TCacheValue> GetCacheItem(string key)
         {
             if (key == null)
@@ -63,13 +68,15 @@ namespace BLL.Cache
             return GetItem(key);
         }
 
+        /// <inheritdoc/>
         public bool Update(string key, TCacheValue value)
         {
             var item = new CacheItem<TCacheValue>(key, value);
 
             return Update(item);
         }
-        
+
+        /// <inheritdoc/>
         public bool Update(CacheItem<TCacheValue> item)
         {
             if (item == null)
@@ -80,6 +87,7 @@ namespace BLL.Cache
             return UpdateItem(item);
         }
 
+        /// <inheritdoc/>
         public bool Delete(string key)
         {
             if (key == null)
@@ -94,10 +102,12 @@ namespace BLL.Cache
 
             return DeleteItem(key);
         }
-        
+
+        /// <inheritdoc/>
         public abstract void Clear();
 
-        public abstract bool IsExists(string key);
+        /// <inheritdoc/>
+        public abstract bool IsExist(string key);
 
         protected abstract bool AddItem(CacheItem<TCacheValue> item);
 
