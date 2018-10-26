@@ -9,18 +9,17 @@ namespace BLL.Cache
     public sealed class CacheDictionary<TCacheValue> : ICacheDictionaty<TCacheValue>
     {
         private const int INTERVAL = 5000;
-        private const int RANDOM_MIN = 1000;
 
         private readonly static Random _random = new Random();
         private readonly ConcurrentDictionary<string, CacheItem<TCacheValue>> _dictionary;
         private readonly Timer _timer;
 
-        private int _scanRunning;
+        private int _location;
 
         public CacheDictionary()
         {
             _dictionary = new ConcurrentDictionary<string, CacheItem<TCacheValue>>();
-            _timer = new Timer(CheckOldItems, null, _random.Next(RANDOM_MIN, INTERVAL), INTERVAL);
+            _timer = new Timer(CheckOldItems, null, INTERVAL, INTERVAL);
         }
         
         public int Count => _dictionary.Count;
@@ -64,6 +63,7 @@ namespace BLL.Cache
                 if (result.IsExpired)
                 {
                     _dictionary.TryRemove(key, out CacheItem<TCacheValue> removeResult);
+
                     return null;
                 }
             }
@@ -98,12 +98,12 @@ namespace BLL.Cache
 
         private void CheckOldItems(object state)
         {
-            if (_scanRunning > 0)
+            if (_location > 0)
             {
                 return;
             }
 
-            if (Interlocked.CompareExchange(ref _scanRunning, 1, 0) == 0)
+            if (Interlocked.CompareExchange(ref _location, 1, 0) == 0)
             {
                 try
                 {
@@ -111,30 +111,24 @@ namespace BLL.Cache
                 }
                 catch (Exception ex)
                 {
-                    // TODO logger
+                    throw new Exception("Error occurred during cheching on old elements.", ex);
                 }
                 finally
                 {
-                    Interlocked.Exchange(ref _scanRunning, 0);
+                    Interlocked.Exchange(ref _location, 0);
                 }
             }
         }
 
-        private int RemoveOldItems()
+        private void RemoveOldItems()
         {
-            int removed = 0;
-            var now = DateTime.UtcNow;
-
             foreach (var item in _dictionary.Values)
             {
                 if (item.IsExpired)
                 {
                     Delete(item.Key);
-                    removed++;
                 }
             }
-            
-            return removed;
         }
     }
 }

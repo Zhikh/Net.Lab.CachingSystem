@@ -3,6 +3,7 @@ using BLL.Interfaces.Cache;
 using BLL.Interfaces.DTO;
 using NUnit.Framework;
 using System;
+using System.Threading;
 
 namespace BLL.Tests
 {
@@ -14,53 +15,19 @@ namespace BLL.Tests
         [SetUp]
         public void Init()
         {
-            var cacheItem = new CacheItem<int>(Internals.KEY_FOR_INT_INIT_VALUE,
-                Internals.INT_INIT_VALUE);
             _cacheDictionaty = new CacheDictionary<int>();
             
-            _cacheDictionaty.Add(cacheItem);
+            _cacheDictionaty.Add(Internals.InitCacheItem);
         }
-
-        #region Exceptions
-        [Test]
-        public void Add_NullCacheItem_ArgumentNullException()
-            => Assert.Catch<ArgumentNullException>(()
-                =>_cacheDictionaty.Add(null));
-
-        [Test]
-        public void Get_NullKey_ArgumentNullException()
-            => Assert.Catch<ArgumentNullException>(()
-                => _cacheDictionaty.Get(null));
-
-        [Test]
-        public void Get_EmptyKey_ArgumentException()
-            => Assert.Catch<ArgumentException>(()
-                 => _cacheDictionaty.Get(string.Empty));
-
-        [Test]
-        public void Update_NullCacheItem_ArgumentNullException()
-            => Assert.Catch<ArgumentNullException>(()
-                => _cacheDictionaty.Update(null));
-
-        [Test]
-        public void Delete_NullKey_ArgumentNullException()
-            => Assert.Catch<ArgumentNullException>(()
-                => _cacheDictionaty.Delete(null));
-
-        [Test]
-        public void Delete_EmptyKey_ArgumentException()
-            => Assert.Catch<ArgumentException>(()
-                => _cacheDictionaty.Delete(string.Empty));
-        #endregion
-
+        
         #region General
         [TestCase("firstKey", 65748)]
         [TestCase("firstKey", -65748)]
         [TestCase("secondKey", int.MinValue)]
         [TestCase("thirdKey", int.MaxValue)]
-        public void Add_CacheItem_ItemWasAdded(string key, int value)
+        public void Add_CacheItem_ItemAdded(string key, int value)
         {
-            var expected = new CacheItem<int>(key, value);
+            var expected = new CacheItem<int>(key, value, Internals.InitTimeSpan);
             _cacheDictionaty.Add(expected);
 
             var actual = _cacheDictionaty.Get(key);
@@ -68,13 +35,13 @@ namespace BLL.Tests
             Assert.AreEqual(expected, actual);
         }
 
-        [TestCase(Internals.KEY_FOR_INT_INIT_VALUE, 12345)]
-        [TestCase(Internals.KEY_FOR_INT_INIT_VALUE, -12345)]
-        [TestCase(Internals.KEY_FOR_INT_INIT_VALUE, int.MinValue)]
-        [TestCase(Internals.KEY_FOR_INT_INIT_VALUE, int.MaxValue)]
-        public void Update_CacheItem_ItemWasUpdated(string key, int updatedValue)
+        [TestCase(Internals.INIT_KEY, 12345)]
+        [TestCase(Internals.INIT_KEY, -12345)]
+        [TestCase(Internals.INIT_KEY, int.MinValue)]
+        [TestCase(Internals.INIT_KEY, int.MaxValue)]
+        public void Update_CacheItem_ItemUpdated(string key, int updatedValue)
         {
-            var expected = new CacheItem<int>(key, updatedValue);
+            var expected = new CacheItem<int>(key, updatedValue, Internals.InitTimeSpan);
             _cacheDictionaty.Update(expected);
 
             var actual = _cacheDictionaty.Get(key);
@@ -82,12 +49,68 @@ namespace BLL.Tests
             Assert.AreEqual(expected.Value, actual.Value);
         }
 
-        [TestCase(Internals.KEY_FOR_INT_INIT_VALUE)]
-        public void Delete_Key_ItemWasDeleted(string key)
+        [TestCase(Internals.INIT_KEY)]
+        public void Delete_Key_ItemDeleted(string key)
         {
             _cacheDictionaty.Delete(key);
             
             CacheItem<int> actual = _cacheDictionaty.Get(key);
+
+            Assert.AreEqual(null, actual);
+        }
+
+        [TestCase(Internals.INIT_KEY, ExpectedResult = true)]
+        [TestCase(Internals.NONEXISTENT_KEY, ExpectedResult = false)]
+        public bool Delete_Key_ReturnsBoolValue(string key) 
+            => _cacheDictionaty.Delete(key);
+
+        [TestCase(Internals.INIT_KEY, ExpectedResult = true)]
+        [TestCase(Internals.NONEXISTENT_KEY, ExpectedResult = false)]
+        public bool IsExsists_Key_ReturnsBoolValue(string key)
+            => _cacheDictionaty.IsExists(key);
+
+        [Test]
+        public void Clear_Key_EmptyCacheDictionary()
+        {
+            var item = new CacheItem<int>(Internals.NEW_KEY, Internals.NEW_INT_VALUE,
+                Internals.InitTimeSpan);
+
+            _cacheDictionaty.Add(item);
+            _cacheDictionaty.Clear();
+
+            var count = _cacheDictionaty.Count;
+
+            Assert.AreEqual(0, count);
+        }
+
+        [TestCase(10)]
+        [TestCase(10_000)]
+        public void Count_GetCountOfValuesInDictionary(int n)
+        {
+            _cacheDictionaty.Clear();
+
+            for(int i = 0; i < n; i++)
+            {
+                _cacheDictionaty.Add(new CacheItem<int>(i.ToString(), i, Internals.InitTimeSpan));
+            }
+
+            var count = _cacheDictionaty.Count;
+
+            Assert.AreEqual(n, count);
+        }
+
+        [Test]
+        public void Test()
+        {
+            var timeOut = new TimeSpan(Internals.INIT_HOURS, Internals.INIT_MINUTES, 
+                Internals.SECONDS);
+            var item = new CacheItem<int>(Internals.NEW_KEY, Internals.NEW_INT_VALUE, timeOut);
+
+            _cacheDictionaty.Add(item);
+
+            Thread.Sleep(Internals.THREAD_TIMEOUT);
+
+            var actual = _cacheDictionaty.Get(Internals.NEW_KEY);
 
             Assert.AreEqual(null, actual);
         }

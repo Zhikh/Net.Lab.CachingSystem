@@ -12,14 +12,16 @@ namespace BLL.Interfaces.Cache
 
         void Clear();
 
-        bool Exists(string key);
+        bool IsExists(string key);
 
         TCacheValue Get(string key);
 
         CacheItem<TCacheValue> GetCacheItem(string key);
 
-        void Put(string key, TCacheValue value);
+        void Update(string key, TCacheValue value);
 
-        bool Remove(string key);
+        void Update(CacheItem<TCacheValue> item);
+
+        bool Delete(string key);
     }
 }

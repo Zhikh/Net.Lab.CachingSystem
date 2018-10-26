@@ -8,13 +8,7 @@ namespace BLL.Interfaces.Cache
         TCacheValue AddOrUpdate(string key, TCacheValue addValue, Func<TCacheValue, TCacheValue> updateValue);
 
         TCacheValue AddOrUpdate(CacheItem<TCacheValue> addItem, Func<TCacheValue, TCacheValue> updateValue);
-
-        TCacheValue GetOrAdd(string key, TCacheValue value);
-
-        TCacheValue Update(string key, Func<TCacheValue, TCacheValue> updateValue);
-
-        void SetTimeout(string key, DateTimeOffset timeout);
-
+        
         void SetTimeout(string key, TimeSpan timeout);
     }
 }
