@@ -2,6 +2,7 @@
 using BLL.Interfaces.Cache;
 using BLL.Interfaces.DTO;
 using NUnit.Framework;
+using System.Collections.Generic;
 
 namespace BLL.Tests
 {
@@ -9,12 +10,13 @@ namespace BLL.Tests
     public partial class CacheManagerTests
     {
         private ICacheManager<int> _cacheManager;
+        private List<CacheItem<int>> _fakeCache;
 
         [SetUp]
         public void Init()
         {
-            var cacheDictionaty = new CacheDictionary<int>();
-            _cacheManager = new CacheManager<int>(cacheDictionaty);
+            _fakeCache = new List<CacheItem<int>>();
+            _cacheManager = new CacheManager<int>(MockObject.CreateCacheDictionary(_fakeCache));
 
             _cacheManager.Add(Internals.InitCacheItem);
         }
@@ -32,25 +34,9 @@ namespace BLL.Tests
 
             Assert.AreEqual(value, actual);
         }
-
-        [Test]
-        public void Add_IntValue_ReturnTrue()
-        {
-            var actual =_cacheManager.Add("newKey", 1234);
-
-            Assert.AreEqual(true, actual);
-        }
-
-        [Test]
-        public void Add_ExistingKey_ReturnFalse()
-        {
-            var actual = _cacheManager.Add(Internals.INIT_KEY, 1234);
-
-            Assert.AreEqual(false, actual);
-        }
-
-        [TestCase("firstKey", 768907445)]
-        [TestCase("secondKey", -768907445)]
+        
+        [TestCase("firstKey", 567882)]
+        [TestCase("secondKey", -1346760)]
         [TestCase("thirdKey", int.MinValue)]
         [TestCase("fourthKey", int.MaxValue)]
         public void Add_CachItem_ItemAdded(string key, int value)
@@ -63,8 +49,8 @@ namespace BLL.Tests
             Assert.AreEqual(expected, actual);
         }
 
-        [TestCase(Internals.INIT_KEY, 768907445)]
-        [TestCase(Internals.INIT_KEY, -768907445)]
+        [TestCase(Internals.INIT_KEY, 76890744)]
+        [TestCase(Internals.INIT_KEY, -76890745)]
         [TestCase(Internals.INIT_KEY, int.MinValue)]
         [TestCase(Internals.INIT_KEY, int.MaxValue)]
         public void Update_IntValue_ValueAdded(string key, int updatedValue)
@@ -76,7 +62,7 @@ namespace BLL.Tests
             Assert.AreEqual(updatedValue, actual);
         }
         
-        [TestCase(Internals.INIT_KEY, 33)]
+        [TestCase(Internals.INIT_KEY, Internals.NEW_INT_VALUE)]
         public void Update_CachItem_ItemUpdated(string key, int updatedValue)
         {
             var expected = new CacheItem<int>(key, updatedValue);
