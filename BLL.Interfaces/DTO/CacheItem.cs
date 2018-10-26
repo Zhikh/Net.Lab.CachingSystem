@@ -4,6 +4,8 @@ namespace BLL.Interfaces.DTO
 {
     public sealed class CacheItem<T>
     {
+        private const int DEFAULT_TIMEOUT = 10;
+
         public CacheItem(string key, T value)
            : this(value, key, null)
         {
@@ -11,17 +13,16 @@ namespace BLL.Interfaces.DTO
 
         public CacheItem(T value, string key, TimeSpan? expirationTimeout)
         {
-            Value = value;  //TODO checking?
+            Value = value;  
             Key = key ?? throw new ArgumentNullException(nameof(key));
-            ValueType = value.GetType();
 
             if (ExpirationTimeout.TotalDays > 365)
             {
                 throw new ArgumentOutOfRangeException(nameof(expirationTimeout), 
-                    "Expiration timeout must less than 365.");
+                    "Timeout must be less than 365.");
             }
 
-            ExpirationTimeout = expirationTimeout ?? new TimeSpan();
+            ExpirationTimeout = expirationTimeout ?? TimeSpan.Zero;     //?
             CreateDate = DateTime.Now;
         }
 
@@ -29,18 +30,20 @@ namespace BLL.Interfaces.DTO
 
         public string Key { get; }
 
-        public Type ValueType { get; }
-
-        public TimeSpan ExpirationTimeout { get; }
+        public TimeSpan ExpirationTimeout { get; set; }
 
         public DateTime CreateDate { get; }
 
-        public bool IsExsists
+        public bool IsExpired
         {
             get
             {
-                //TODO add implementation
-
+                var now = DateTime.UtcNow;
+                if (CreateDate.Add(ExpirationTimeout) < now)
+                {
+                    return true;
+                }
+                
                 return false;
             }
         }
