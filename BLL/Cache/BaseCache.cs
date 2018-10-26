@@ -1,6 +1,6 @@
-﻿using BLL.Interfaces.Cache;
+﻿using System;
+using BLL.Interfaces.Cache;
 using BLL.Interfaces.DTO;
-using System;
 
 namespace BLL.Cache
 {
@@ -62,21 +62,21 @@ namespace BLL.Cache
             return GetItem(key);
         }
 
-        public void Update(string key, TCacheValue value)
+        public bool Update(string key, TCacheValue value)
         {
             var item = new CacheItem<TCacheValue>(key, value);
 
-            Update(item);
+            return Update(item);
         }
         
-        public void Update(CacheItem<TCacheValue> item)
+        public bool Update(CacheItem<TCacheValue> item)
         {
             if (item == null)
             {
                 throw new ArgumentNullException(nameof(item));
             }
 
-            UpdateItem(item);
+            return UpdateItem(item);
         }
 
         public bool Delete(string key)
@@ -102,7 +102,7 @@ namespace BLL.Cache
 
         protected abstract CacheItem<TCacheValue> GetItem(string key);
 
-        protected abstract void UpdateItem(CacheItem<TCacheValue> item);
+        protected abstract bool UpdateItem(CacheItem<TCacheValue> item);
 
         protected abstract bool DeleteItem(string key);
     }

@@ -18,9 +18,9 @@ namespace BLL.Interfaces.Cache
 
         CacheItem<TCacheValue> GetCacheItem(string key);
 
-        void Update(string key, TCacheValue value);
+        bool Update(string key, TCacheValue value);
 
-        void Update(CacheItem<TCacheValue> item);
+        bool Update(CacheItem<TCacheValue> item);
 
         bool Delete(string key);
     }

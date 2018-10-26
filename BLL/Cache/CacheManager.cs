@@ -10,32 +10,34 @@ namespace BLL.Cache
 
         public CacheManager(ICacheDictionaty<TCacheValue> cacheDictionary)
         {
-            _cacheDictionary = cacheDictionary ?? throw new ArgumentNullException(nameof(cacheDictionary));
+            _cacheDictionary = cacheDictionary ?? 
+                throw new ArgumentNullException(nameof(cacheDictionary));
         }
-
-        public TCacheValue AddOrUpdate(string key, TCacheValue addValue, Func<TCacheValue, TCacheValue> updateValue)
-        {
-            throw new NotImplementedException();
-        }
-
-        public TCacheValue AddOrUpdate(CacheItem<TCacheValue> addItem, Func<TCacheValue, TCacheValue> updateValue)
-        {
-            throw new NotImplementedException();
-        }
-
+        
         public override void Clear()
             => _cacheDictionary.Clear();
 
         public override bool IsExists(string key)
             => _cacheDictionary.IsExists(key);
-        
-        public void SetTimeout(string key, TimeSpan timeout)
-        {
-            var item = _cacheDictionary.Get(key);
 
-            item.ExpirationTimeout = timeout;
+
+        public bool AddOrUpdate(string key, TCacheValue value)
+        {
+            var item = new CacheItem<TCacheValue>(key, value);
+
+            return AddOrUpdate(item);
         }
-        
+
+        public bool AddOrUpdate(CacheItem<TCacheValue> item)
+        {
+            if (item == null)
+            {
+                throw new ArgumentNullException(nameof(item));
+            }
+            
+            return (GetCacheItem(item.Key)) != null ? Update(item) : Add(item);
+        }
+
         protected override bool AddItem(CacheItem<TCacheValue> item)
         {
             return _cacheDictionary.Add(item);
@@ -46,9 +48,11 @@ namespace BLL.Cache
             return _cacheDictionary.Get(key);
         }
 
-        protected override void UpdateItem(CacheItem<TCacheValue> item)
+        protected override bool UpdateItem(CacheItem<TCacheValue> item)
         {
             _cacheDictionary.Update(item);
+
+            return _cacheDictionary.Get(item.Key) == item;
         }
 
         protected override bool DeleteItem(string key)
