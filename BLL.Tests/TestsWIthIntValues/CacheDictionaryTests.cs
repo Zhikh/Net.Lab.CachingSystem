@@ -69,7 +69,7 @@ namespace BLL.Tests
         [TestCase(Internals.INIT_KEY, ExpectedResult = true)]
         [TestCase(Internals.NONEXISTENT_KEY, ExpectedResult = false)]
         public bool IsExsists_Key_ReturnsBoolValue(string key)
-            => _cacheDictionaty.IsExists(key);
+            => _cacheDictionaty.IsExist(key);
 
         [Test]
         public void Clear_Key_EmptyCacheDictionary()

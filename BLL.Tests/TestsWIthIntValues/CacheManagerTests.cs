@@ -9,7 +9,7 @@ namespace BLL.Tests
     [TestFixture]
     public partial class CacheManagerTests
     {
-        private ICache<int> _cacheManager;
+        private ICacheManager<int> _cacheManager;
         private List<CacheItem<int>> _fakeCache;
 
         [SetUp]
@@ -49,6 +49,35 @@ namespace BLL.Tests
             var actual = _cacheManager.GetCacheItem(key);
 
             Assert.AreEqual(expected, actual);
+        }
+
+        [TestCase(Internals.INIT_KEY, Internals.NEW_INT_VALUE)]
+        [TestCase("firstKey", 5678739)]
+        [TestCase("secondKey", -1460)]
+        [TestCase("thirdKey", int.MinValue)]
+        [TestCase("fourthKey", int.MaxValue)]
+        public void AddOrUpdate_CachItem_ItemAdded(string key, int value)
+        {
+            var expected = new CacheItem<int>(key, value);
+            _cacheManager.AddOrUpdate(expected);
+
+            var actual = _cacheManager.GetCacheItem(key);
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestCase(Internals.INIT_KEY, Internals.NEW_INT_VALUE)]
+        [TestCase("firstKey", 479)]
+        [TestCase("secondKey", -88888)]
+        [TestCase("thirdKey", int.MinValue)]
+        [TestCase("fourthKey", int.MaxValue)]
+        public void AddOrUpdate_IntValue_ItemAdded(string key, int value)
+        {
+            _cacheManager.AddOrUpdate(key, value);
+
+            var actual = _cacheManager.Get(key);
+
+            Assert.AreEqual(value, actual);
         }
 
         [TestCase(Internals.INIT_KEY, 76890744)]
@@ -93,7 +122,7 @@ namespace BLL.Tests
         [TestCase(Internals.INIT_KEY, ExpectedResult = true)]
         [TestCase(Internals.NONEXISTENT_KEY, ExpectedResult = false)]
         public bool IsExists_Key_ReturnBoolValue(string key)
-            => _cacheManager.IsExists(key);
+            => _cacheManager.IsExist(key);
         #endregion
     }
 }
