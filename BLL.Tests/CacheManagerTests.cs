@@ -2,6 +2,7 @@
 using BLL.Interfaces.Cache;
 using BLL.Interfaces.DTO;
 using NUnit.Framework;
+using System;
 using System.Collections.Generic;
 
 namespace BLL.Tests
@@ -56,7 +57,7 @@ namespace BLL.Tests
         [TestCase("secondKey", -1460)]
         [TestCase("thirdKey", int.MinValue)]
         [TestCase("fourthKey", int.MaxValue)]
-        public void AddOrUpdate_CachItem_ItemAdded(string key, int value)
+        public void AddOrUpdate_CachItem_ItemAddedOrUpdated(string key, int value)
         {
             var expected = new CacheItem<int>(key, value);
             _cacheManager.AddOrUpdate(expected);
@@ -71,7 +72,7 @@ namespace BLL.Tests
         [TestCase("secondKey", -88888)]
         [TestCase("thirdKey", int.MinValue)]
         [TestCase("fourthKey", int.MaxValue)]
-        public void AddOrUpdate_IntValue_ItemAdded(string key, int value)
+        public void AddOrUpdate_IntValue_ItemAddedOrUpdated(string key, int value)
         {
             _cacheManager.AddOrUpdate(key, value);
 
@@ -84,7 +85,7 @@ namespace BLL.Tests
         [TestCase(Internals.INIT_KEY, -76890745)]
         [TestCase(Internals.INIT_KEY, int.MinValue)]
         [TestCase(Internals.INIT_KEY, int.MaxValue)]
-        public void Update_IntValue_ValueAdded(string key, int updatedValue)
+        public void Update_IntValue_ValueUpdated(string key, int updatedValue)
         {
             _cacheManager.Update(key, updatedValue);
 
@@ -92,7 +93,20 @@ namespace BLL.Tests
 
             Assert.AreEqual(updatedValue, actual);
         }
-        
+
+        [TestCase(Internals.INIT_KEY, 12)]
+        [TestCase(Internals.INIT_KEY, 123)]
+        public void Update_TimeOut_ItemUpdated(string key, int updatedValue)
+        {
+            var expected = _cacheManager.GetCacheItem(key);
+            expected.ExpirationTimeout = new TimeSpan(updatedValue);
+            _cacheManager.Update(expected);
+
+            var actual = _cacheManager.GetCacheItem(key);
+
+            Assert.AreEqual(expected, actual);
+        }
+
         [TestCase(Internals.INIT_KEY, Internals.NEW_INT_VALUE)]
         public void Update_CachItem_ItemUpdated(string key, int updatedValue)
         {
