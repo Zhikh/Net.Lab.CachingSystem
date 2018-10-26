@@ -1,5 +1,4 @@
 ﻿using System;
-using BLL.Interfaces.DTO;
 
 namespace BLL.Tests
 {
@@ -13,6 +12,7 @@ namespace BLL.Tests
 
         public const string NEW_KEY = "newKey";
         public const int NEW_INT_VALUE = 12345;
+        public const string NEW_STR_VALUE = "newValue";
 
         public const int INIT_DAYS = 1;
         public const int INIT_HOURS = 0;
