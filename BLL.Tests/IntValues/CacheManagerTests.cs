@@ -9,16 +9,18 @@ namespace BLL.Tests
     [TestFixture]
     public partial class CacheManagerTests
     {
-        private ICacheManager<int> _cacheManager;
+        private ICache<int> _cacheManager;
         private List<CacheItem<int>> _fakeCache;
 
         [SetUp]
         public void Init()
         {
+            var cacheItem = new CacheItem<int>(Internals.INIT_KEY, Internals.INT_INIT_VALUE,
+                                               Internals.InitTimeSpan);
             _fakeCache = new List<CacheItem<int>>();
             _cacheManager = new CacheManager<int>(MockObject.CreateCacheDictionary(_fakeCache));
 
-            _cacheManager.Add(Internals.InitCacheItem);
+            _cacheManager.Add(cacheItem);
         }
         
         #region General

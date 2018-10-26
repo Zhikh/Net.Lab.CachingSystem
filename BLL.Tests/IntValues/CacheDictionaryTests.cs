@@ -1,9 +1,9 @@
-﻿using BLL.Cache;
+﻿using System;
+using System.Threading;
+using BLL.Cache;
 using BLL.Interfaces.Cache;
 using BLL.Interfaces.DTO;
 using NUnit.Framework;
-using System;
-using System.Threading;
 
 namespace BLL.Tests
 {
@@ -15,9 +15,11 @@ namespace BLL.Tests
         [SetUp]
         public void Init()
         {
+            var cacheItem = new CacheItem<int>(Internals.INIT_KEY, Internals.INT_INIT_VALUE,
+                                               Internals.InitTimeSpan);
             _cacheDictionaty = new CacheDictionary<int>();
             
-            _cacheDictionaty.Add(Internals.InitCacheItem);
+            _cacheDictionaty.Add(cacheItem);
         }
         
         #region General
@@ -73,7 +75,7 @@ namespace BLL.Tests
         public void Clear_Key_EmptyCacheDictionary()
         {
             var item = new CacheItem<int>(Internals.NEW_KEY, Internals.NEW_INT_VALUE,
-                Internals.InitTimeSpan);
+                                          Internals.InitTimeSpan);
 
             _cacheDictionaty.Add(item);
             _cacheDictionaty.Clear();
@@ -89,7 +91,7 @@ namespace BLL.Tests
         {
             _cacheDictionaty.Clear();
 
-            for(int i = 0; i < n; i++)
+            for (int i = 0; i < n; i++)
             {
                 _cacheDictionaty.Add(new CacheItem<int>(i.ToString(), i, Internals.InitTimeSpan));
             }
@@ -103,7 +105,7 @@ namespace BLL.Tests
         public void Test()
         {
             var timeOut = new TimeSpan(Internals.INIT_HOURS, Internals.INIT_MINUTES, 
-                Internals.SECONDS);
+                                       Internals.SECONDS);
             var item = new CacheItem<int>(Internals.NEW_KEY, Internals.NEW_INT_VALUE, timeOut);
 
             _cacheDictionaty.Add(item);

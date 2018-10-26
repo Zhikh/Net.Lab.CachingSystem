@@ -1,5 +1,5 @@
-﻿using BLL.Interfaces.DTO;
-using System;
+﻿using System;
+using BLL.Interfaces.DTO;
 
 namespace BLL.Tests
 {
@@ -7,6 +7,7 @@ namespace BLL.Tests
     {
         public const string INIT_KEY = "testKey";
         public const int INT_INIT_VALUE = 1234;
+        public const string STR_INIT_VALUE = "testValue";
 
         public const string NONEXISTENT_KEY = "nonExistentKey";
 
@@ -20,8 +21,6 @@ namespace BLL.Tests
 
         public const int THREAD_TIMEOUT = 11_000; 
 
-        public static TimeSpan InitTimeSpan = new TimeSpan(INIT_DAYS, INIT_HOURS, INIT_MINUTES);
-        public readonly static CacheItem<int> InitCacheItem = new CacheItem<int>(INIT_KEY, INT_INIT_VALUE,
-            Internals.InitTimeSpan);
+        public static TimeSpan InitTimeSpan => new TimeSpan(INIT_DAYS, INIT_HOURS, INIT_MINUTES);
     }
 }

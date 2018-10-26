@@ -12,6 +12,7 @@ namespace BLL.Cache
             {
                 return Get(key);
             }
+
             set
             {
                 Update(key, value);
@@ -88,7 +89,7 @@ namespace BLL.Cache
 
             if (key == string.Empty)
             {
-                throw new ArgumentException("The parameter key can't be empty!",nameof(key));
+                throw new ArgumentException("The parameter key can't be empty!", nameof(key));
             }
 
             return DeleteItem(key);

@@ -1,6 +1,6 @@
-﻿using BLL.Interfaces.Cache;
+﻿using System;
+using BLL.Interfaces.Cache;
 using BLL.Interfaces.DTO;
-using System;
 
 namespace BLL.Cache
 {
@@ -20,7 +20,6 @@ namespace BLL.Cache
         public override bool IsExists(string key)
             => _cacheDictionary.IsExists(key);
 
-
         public bool AddOrUpdate(string key, TCacheValue value)
         {
             var item = new CacheItem<TCacheValue>(key, value);
@@ -35,7 +34,7 @@ namespace BLL.Cache
                 throw new ArgumentNullException(nameof(item));
             }
             
-            return (GetCacheItem(item.Key)) != null ? Update(item) : Add(item);
+            return GetCacheItem(item.Key) != null ? Update(item) : Add(item);
         }
 
         protected override bool AddItem(CacheItem<TCacheValue> item)

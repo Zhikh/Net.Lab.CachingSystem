@@ -1,16 +1,15 @@
-﻿using BLL.Interfaces.Cache;
-using BLL.Interfaces.DTO;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Threading;
+using BLL.Interfaces.Cache;
+using BLL.Interfaces.DTO;
 
 namespace BLL.Cache
 {
     public sealed class CacheDictionary<TCacheValue> : ICacheDictionaty<TCacheValue>
     {
         private const int INTERVAL = 5000;
-
-        private readonly static Random _random = new Random();
+        
         private readonly ConcurrentDictionary<string, CacheItem<TCacheValue>> _dictionary;
         private readonly Timer _timer;
 
