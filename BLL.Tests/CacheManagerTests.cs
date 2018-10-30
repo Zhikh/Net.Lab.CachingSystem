@@ -16,14 +16,91 @@ namespace BLL.Tests
         [SetUp]
         public void Init()
         {
-            var cacheItem = new CacheItem<int>(Internals.INIT_KEY, Internals.INT_INIT_VALUE,
-                                               Internals.InitTimeSpan);
+            var cacheItem = new CacheItem<int>(TestData.INIT_KEY, TestData.INT_INIT_VALUE,
+                                               TestData.InitTimeSpan);
             _fakeCache = new List<CacheItem<int>>();
             _cacheManager = new CacheManager<int>(MockObject.CreateCacheDictionary(_fakeCache));
 
             _cacheManager.Add(cacheItem);
         }
-        
+
+        #region Exceptions
+        [Test]
+        public void Add_NullKey_ArgumentNullException()
+            => Assert.Catch<ArgumentNullException>(()
+                => _cacheManager.Add(null, TestData.INT_INIT_VALUE));
+
+        [Test]
+        public void Add_EmptyKey_ArgumentException()
+            => Assert.Catch<ArgumentException>(()
+                => _cacheManager.Add(string.Empty, TestData.INT_INIT_VALUE));
+
+        [Test]
+        public void AddOrUpdate_NullKey_ArgumentNullException()
+            => Assert.Catch<ArgumentNullException>(()
+                => _cacheManager.AddOrUpdate(null, TestData.INT_INIT_VALUE));
+
+        [Test]
+        public void AddOrUpdate_EmptyKey_ArgumentException()
+            => Assert.Catch<ArgumentException>(()
+                => _cacheManager.AddOrUpdate(string.Empty, TestData.INT_INIT_VALUE));
+
+        [Test]
+        public void AddOrUpdate_NullItem_ArgumentNullException()
+            => Assert.Catch<ArgumentNullException>(()
+                => _cacheManager.AddOrUpdate(null));
+
+        [Test]
+        public void Get_NullKey_ArgumentNullException()
+            => Assert.Catch<ArgumentNullException>(()
+                => _cacheManager.Get(null));
+
+        [Test]
+        public void Get_EmptyKey_ArgumentException()
+            => Assert.Catch<ArgumentException>(()
+                => _cacheManager.Get(string.Empty));
+
+        [Test]
+        public void GetCacheItem_NullKey_ArgumentNullException()
+            => Assert.Catch<ArgumentNullException>(() => _cacheManager.GetCacheItem(null));
+
+        [Test]
+        public void GetCacheItem_EmptyKey_ArgumentException()
+            => Assert.Catch<ArgumentException>(() => _cacheManager.GetCacheItem(string.Empty));
+
+        [Test]
+        public void Update_NullKey_ArgumentNullException()
+            => Assert.Catch<ArgumentNullException>(()
+                => _cacheManager.Update(null, TestData.INT_INIT_VALUE));
+
+        [Test]
+        public void Update_EmptyKey_ArgumentException()
+            => Assert.Catch<ArgumentException>(()
+                => _cacheManager.Update(string.Empty, TestData.INT_INIT_VALUE));
+
+        [Test]
+        public void Delete_NullKey_ArgumentNullException()
+            => Assert.Catch<ArgumentNullException>(() => _cacheManager.Delete(null));
+
+        [Test]
+        public void Delete_EmptyKey_ArgumentException()
+            => Assert.Catch<ArgumentException>(() => _cacheManager.Delete(string.Empty));
+
+        [Test]
+        public void Indexer_NullKey_ArgumentNullException()
+            => Assert.Catch<ArgumentNullException>(() =>
+            {
+                var item = _cacheManager[null];
+            });
+
+        [Test]
+        public void Indexer_EmptyKey_ArgumentNullException()
+            => Assert.Catch<ArgumentException>(() =>
+            {
+                var item = _cacheManager[string.Empty];
+            });
+        #endregion
+
         #region General
         [TestCase("firstKey", 768907445)]
         [TestCase("secondKey", -768907445)]
@@ -52,7 +129,7 @@ namespace BLL.Tests
             Assert.AreEqual(expected, actual);
         }
 
-        [TestCase(Internals.INIT_KEY, Internals.NEW_INT_VALUE)]
+        [TestCase(TestData.INIT_KEY, TestData.NEW_INT_VALUE)]
         [TestCase("firstKey", 5678739)]
         [TestCase("secondKey", -1460)]
         [TestCase("thirdKey", int.MinValue)]
@@ -67,7 +144,7 @@ namespace BLL.Tests
             Assert.AreEqual(expected, actual);
         }
 
-        [TestCase(Internals.INIT_KEY, Internals.NEW_INT_VALUE)]
+        [TestCase(TestData.INIT_KEY, TestData.NEW_INT_VALUE)]
         [TestCase("firstKey", 479)]
         [TestCase("secondKey", -88888)]
         [TestCase("thirdKey", int.MinValue)]
@@ -81,10 +158,10 @@ namespace BLL.Tests
             Assert.AreEqual(value, actual);
         }
 
-        [TestCase(Internals.INIT_KEY, 76890744)]
-        [TestCase(Internals.INIT_KEY, -76890745)]
-        [TestCase(Internals.INIT_KEY, int.MinValue)]
-        [TestCase(Internals.INIT_KEY, int.MaxValue)]
+        [TestCase(TestData.INIT_KEY, 76890744)]
+        [TestCase(TestData.INIT_KEY, -76890745)]
+        [TestCase(TestData.INIT_KEY, int.MinValue)]
+        [TestCase(TestData.INIT_KEY, int.MaxValue)]
         public void Update_IntValue_ValueUpdated(string key, int updatedValue)
         {
             _cacheManager.Update(key, updatedValue);
@@ -94,8 +171,8 @@ namespace BLL.Tests
             Assert.AreEqual(updatedValue, actual);
         }
 
-        [TestCase(Internals.INIT_KEY, 12)]
-        [TestCase(Internals.INIT_KEY, 123)]
+        [TestCase(TestData.INIT_KEY, 12)]
+        [TestCase(TestData.INIT_KEY, 123)]
         public void Update_TimeOut_ItemUpdated(string key, int updatedValue)
         {
             var expected = _cacheManager.GetCacheItem(key);
@@ -107,7 +184,7 @@ namespace BLL.Tests
             Assert.AreEqual(expected, actual);
         }
 
-        [TestCase(Internals.INIT_KEY, Internals.NEW_INT_VALUE)]
+        [TestCase(TestData.INIT_KEY, TestData.NEW_INT_VALUE)]
         public void Update_CachItem_ItemUpdated(string key, int updatedValue)
         {
             var expected = new CacheItem<int>(key, updatedValue);
@@ -118,7 +195,7 @@ namespace BLL.Tests
             Assert.AreEqual(expected.Value, actual);
         }
 
-        [TestCase(Internals.INIT_KEY)]
+        [TestCase(TestData.INIT_KEY)]
         public void Delete_Key_ValueDeleted(string key)
         {
             _cacheManager.Delete(key);
@@ -128,14 +205,14 @@ namespace BLL.Tests
             Assert.AreEqual(default(int), actual);
         }
 
-        [TestCase(Internals.INIT_KEY, ExpectedResult = true)]
-        [TestCase(Internals.NONEXISTENT_KEY, ExpectedResult = false)]
-        public bool Delete_Key_ReturnBoolValue(string key) 
+        [TestCase(TestData.INIT_KEY, ExpectedResult = true)]
+        [TestCase(TestData.NONEXISTENT_KEY, ExpectedResult = false)]
+        public bool Delete_Key_ReturnsBoolValue(string key) 
             => _cacheManager.Delete(key);
 
-        [TestCase(Internals.INIT_KEY, ExpectedResult = true)]
-        [TestCase(Internals.NONEXISTENT_KEY, ExpectedResult = false)]
-        public bool IsExists_Key_ReturnBoolValue(string key)
+        [TestCase(TestData.INIT_KEY, ExpectedResult = true)]
+        [TestCase(TestData.NONEXISTENT_KEY, ExpectedResult = false)]
+        public bool IsExists_Key_ReturnsBoolValue(string key)
             => _cacheManager.IsExist(key);
         #endregion
     }
